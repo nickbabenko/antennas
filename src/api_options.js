@@ -1,6 +1,6 @@
 const config = require('./config');
 
-module.exports = function(apiPath, tvheadendUrl) {
+module.exports = function(apiPath) {
   const options = {
     url: `${config().tvheadend_parsed_uri}${apiPath}`,
     method: 'GET',
@@ -18,3 +18,4 @@ module.exports = function(apiPath, tvheadendUrl) {
 
   return options;
 }
+

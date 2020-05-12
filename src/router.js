@@ -6,8 +6,28 @@ const lineup = require('./lineup');
 const request = require('request-promise-native');
 const getAPIOptions = require('./api_options');
 
-function getConnectionStatus(tvheadendUrl) {
-  let options = getAPIOptions('/api/channel/grid?start=0&limit=999999', tvheadendUrl);
+async function getEpgEvents() {
+    const options = getAPIOptions('/epg/events/grid');
+    try {
+        const response = await request(options);
+        return response.entries;
+    } catch (e) {
+        return [];
+    }
+}
+
+function getEpgChannels() {
+    const options = getAPIOptions('/api/channel/grid?start=0&limit=999999');
+    try {
+        const response = await request(options);
+        return response.entries;
+    } catch (e) {
+        return [];
+    }
+}
+
+function getConnectionStatus() {
+  let options = getAPIOptions('/api/channel/grid?start=0&limit=999999');
   let result = request(options).then(function(body) {
     return "All systems go";
   }).catch(function(err) {
@@ -30,10 +50,25 @@ function getConnectionStatus(tvheadendUrl) {
 module.exports = function() {
   const router = new Router();
 
+  router.get('/epg.xml', async (ctx, next) => {
+    const channels = await getEpgChannels()
+    const programmes = await getEpgEvents()
+    ctx.type = "application/xml"
+    ctx.body = `<?Xml version="1.0" encoding="utf-8"?>
+        <tv generator-info-name="antenna" generator-info-url="atenna.co.uk">
+            ${channels.map(channel => `<channel id="${channel.uuid}"><display-name>${channel.name}</display-name></channel>`)}
+            ${programmes.map(programme => `<programme start="${programme.start}" stop="${programme.stop}" channel="${programme.channelUuid}">
+                <title lang="en">${programme.title}</title>
+                ${'summary' in programme ? `<desc lang="en">${programme.summary}</desc>` : ''}
+            </programme>`)}
+        </tv>
+    `
+  })
+
   router.get('/antennas_config.json', async (ctx, next) => {
     ctx.type = "application/json"
     let configuration = config();
-    configuration.status = await getConnectionStatus(tvheadendUrl),
+    configuration.status = await getConnectionStatus(),
     ctx.body = configuration;
   });
 
