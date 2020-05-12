@@ -4,4 +4,5 @@ const updateEpg = require('./cron/updateEpg');
 
 module.exports = () => {
     cron.schedule('*/10 * * * *', updateEpg);
+    updateEpg();
 };

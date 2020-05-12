@@ -27,8 +27,8 @@ try {
 
   app.listen(5004);
   console.log(`📡  Antennas are deployed! Proxying from ${config().antennas_url}`);
-  cron();
   ssdp();
+  cron();
 } catch (e) {
   console.log('❌  Antennas failed to deploy! 😮  It could be missing a config file, or something is misconfigured. See below for details:');
   console.log(e);
