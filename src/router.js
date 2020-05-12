@@ -2,29 +2,12 @@ const Router = require('koa-router');
 const config = require('./config');
 const device = require('./device');
 const lineup = require('./lineup');
+const fs = require('fs');
 
 const request = require('request-promise-native');
 const getAPIOptions = require('./api_options');
 
-async function getEpgEvents() {
-    const options = getAPIOptions('/epg/events/grid');
-    try {
-        const response = await request(options);
-        return response.entries;
-    } catch (e) {
-        return [];
-    }
-}
-
-function getEpgChannels() {
-    const options = getAPIOptions('/api/channel/grid?start=0&limit=999999');
-    try {
-        const response = await request(options);
-        return response.entries;
-    } catch (e) {
-        return [];
-    }
-}
+const TMP_DIR = __dirname + '/../tmp/'
 
 function getConnectionStatus() {
   let options = getAPIOptions('/api/channel/grid?start=0&limit=999999');
@@ -51,18 +34,13 @@ module.exports = function() {
   const router = new Router();
 
   router.get('/epg.xml', async (ctx, next) => {
-    const channels = await getEpgChannels()
-    const programmes = await getEpgEvents()
-    ctx.type = "application/xml"
-    ctx.body = `<?Xml version="1.0" encoding="utf-8"?>
-        <tv generator-info-name="antenna" generator-info-url="atenna.co.uk">
-            ${channels.map(channel => `<channel id="${channel.uuid}"><display-name>${channel.name}</display-name></channel>`)}
-            ${programmes.map(programme => `<programme start="${programme.start}" stop="${programme.stop}" channel="${programme.channelUuid}">
-                <title lang="en">${programme.title}</title>
-                ${'summary' in programme ? `<desc lang="en">${programme.summary}</desc>` : ''}
-            </programme>`)}
-        </tv>
-    `
+      const epgFile = TMP_DIR + 'epg.xml'
+      if (!fs.existsSync(epgFile)) {
+          ctx.statusCode = 503;
+      } else {
+        ctx.type = 'application/xml';
+        ctx.body = fs.readFileSync(TMP_DIR + 'epg.xml');
+      }
   })
 
   router.get('/antennas_config.json', async (ctx, next) => {

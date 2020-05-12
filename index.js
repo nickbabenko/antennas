@@ -6,6 +6,7 @@ const fs = require('fs');
 const router = require('./src/router');
 const config = require('./src/config');
 const ssdp = require('./src/ssdp');
+const cron = require('./src/cron');
 
 // TODO: Figure out the discovery protocol UDP thing on port 65001
 // Mainly, WHAT IS THAT YOU WANT PLEX?!
@@ -26,6 +27,7 @@ try {
 
   app.listen(5004);
   console.log(`📡  Antennas are deployed! Proxying from ${config().antennas_url}`);
+  cron();
   ssdp();
 } catch (e) {
   console.log('❌  Antennas failed to deploy! 😮  It could be missing a config file, or something is misconfigured. See below for details:');
