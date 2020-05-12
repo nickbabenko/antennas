@@ -99,8 +99,7 @@ module.exports = function() {
 
   router.get('/ConnectionManager.xml', (ctx, next) => {
     ctx.type = "application/xml";
-    ctx.body = `
-    <?xml version="1.0" encoding="utf-8" ?>
+    ctx.body = `<?xml version="1.0" encoding="utf-8" ?>
     <scpd xmlns="urn:schemas-upnp-org:service-1-0">
       <specVersion>
         <major>1</major>
@@ -236,8 +235,7 @@ module.exports = function() {
 
   router.get('/ContentDirectory.xml', (ctx, next) => {
     ctx.type = "application/xml";
-    ctx.body = `
-    <?xml version="1.0" encoding="utf-8"?>
+    ctx.body = `<?xml version="1.0" encoding="utf-8"?>
     <scpd xmlns="urn:schemas-upnp-org:service-1-0">
       <specVersion>
         <major>1</major>
