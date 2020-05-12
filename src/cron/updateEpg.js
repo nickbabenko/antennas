@@ -3,6 +3,7 @@ const request = require('request-promise-native');
 const getAPIOptions = require('../api_options');
 
 const XML_HEADER = `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
 <tv generator-info-name="antenna" generator-info-url="antenna.co.uk">`
 const epgFile = __dirname + '/../../tmp/epg.xml'
 
@@ -58,7 +59,7 @@ async function writeChannels() {
     const channels = await getEpgChannels();
     channels.forEach(channel => {
         fs.appendFileSync(epgFile, `    <channel id="${channel.uuid}">${NL}`);
-        fs.appendFileSync(epgFile, `        <display-name lang="en"><![CDATA[${channel.name}]]></display-name>${NL}`);
+        fs.appendFileSync(epgFile, `        <display-name lang="en">${channel.name}</display-name>${NL}`);
         fs.appendFileSync(epgFile, '    </channel>' + NL);
     });
 }
