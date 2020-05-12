@@ -9,6 +9,23 @@ const epgFile = __dirname + '/../../tmp/epg.xml'
 const LIMIT = 1000;
 const NL = "\n";
 
+function prefixZero(number) {
+    return (number < 0 ? '0' : '') + number;
+}
+
+function formatDate(unixTimestamp) {
+    const date = new Date(parseInt(unixTimestamp) * 1000);
+    return [
+        date.getFullYear(),
+        prefixZero(date.getMonth()),
+        prefixZero(date.getDate()),
+        prefixZero(date.getHours()),
+        prefixZero(date.getMinutes()),
+        prefixZero(date.getSeconds()),
+        ' +0000',
+    ].join('')
+}
+
 async function getEpgEvents(start = 0) {
     const options = getAPIOptions(`/api/epg/events/grid?start=${start}&limit=${LIMIT}`);
     try {
@@ -41,7 +58,7 @@ async function writeChannels() {
     const channels = await getEpgChannels();
     channels.forEach(channel => {
         fs.appendFileSync(epgFile, `    <channel id="${channel.uuid}">${NL}`);
-        fs.appendFileSync(epgFile, `        <display-name><![CDATA[${channel.name}]]></display-name>${NL}`);
+        fs.appendFileSync(epgFile, `        <display-name lang="en"><![CDATA[${channel.name}]]></display-name>${NL}`);
         fs.appendFileSync(epgFile, '    </channel>' + NL);
     });
 }
@@ -49,7 +66,7 @@ async function writeChannels() {
 async function writeProgrammes(offset = 0) {
     const programmes = await getEpgEvents();
     programmes.entries.forEach(programme => {
-        fs.appendFileSync(epgFile, `    <programme start="${programme.start}" stop="${programme.stop}" channel="${programme.channelUuid}">${NL}`);
+        fs.appendFileSync(epgFile, `    <programme start="${formatDate(programme.start)}" stop="${formatDate(programme.stop)}" channel="${programme.channelUuid}">${NL}`);
         fs.appendFileSync(epgFile, `        <title lang="en"><![CDATA[${programme.title}]]></title>${NL}`);
         if ('summary' in programme) {
             fs.appendFileSync(epgFile, `        <desc lang="en"><![CDATA[${programme.summary}]]></desc>${NL}`);
