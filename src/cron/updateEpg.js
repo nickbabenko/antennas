@@ -65,7 +65,7 @@ async function writeChannels() {
 }
 
 async function writeProgrammes(offset = 0) {
-    const programmes = await getEpgEvents();
+    const programmes = await getEpgEvents(offset);
     programmes.entries.forEach(programme => {
         fs.appendFileSync(epgFile, `    <programme start="${formatDate(programme.start)}" stop="${formatDate(programme.stop)}" channel="${programme.channelNumber}">${NL}`);
         fs.appendFileSync(epgFile, `        <title lang="en">${programme.title ? programme.title.replace(/&/g, 'and') : ''}</title>${NL}`);
