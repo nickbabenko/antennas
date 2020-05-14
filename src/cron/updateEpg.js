@@ -11,7 +11,7 @@ const LIMIT = 1000;
 const NL = "\n";
 
 function prefixZero(number) {
-    return (number < 0 ? '0' : '') + number;
+    return (number < 10 ? '0' : '') + number;
 }
 
 function formatDate(unixTimestamp) {
@@ -23,7 +23,7 @@ function formatDate(unixTimestamp) {
         prefixZero(date.getHours()),
         prefixZero(date.getMinutes()),
         prefixZero(date.getSeconds()),
-        ' +0000',
+        ' +1000',
     ].join('')
 }
 
