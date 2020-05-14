@@ -18,7 +18,7 @@ function formatDate(unixTimestamp) {
     const date = new Date(parseInt(unixTimestamp) * 1000);
     return [
         date.getFullYear(),
-        prefixZero(date.getMonth()),
+        prefixZero(date.getMonth() + 1),
         prefixZero(date.getDate()),
         prefixZero(date.getHours()),
         prefixZero(date.getMinutes()),
