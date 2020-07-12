@@ -23,7 +23,7 @@ function formatDate(unixTimestamp) {
         prefixZero(date.getHours()),
         prefixZero(date.getMinutes()),
         prefixZero(date.getSeconds()),
-        ' +0100',
+        ' +0100', // TODO: Get this from somewhere, can't get it from unix timestamp
     ].join('')
 }
 
